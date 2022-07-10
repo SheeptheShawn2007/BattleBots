@@ -1,0 +1,992 @@
+import random
+from re import M
+import sys
+
+class Modules:
+    def __init__(self, Name, stat):
+        self.n = Name
+        self.stat = stat
+
+class Robots:
+    def __init__(self, Name ,maxhp, meleedmg, rangedmg, mrange, range, speed, defense):
+        self.n = Name
+        self.hp = maxhp
+        self.mdmg = meleedmg
+        self.rdmg = rangedmg
+        self.mrange = mrange
+        self.r = range
+        self.s = speed
+        self.d = defense
+
+    def allstats(self, Player):
+        if Player == True:
+            print("YOU:\nHP: " + str(self.hp), " Melee Damage: " + str(self.mdmg), " Range Damage: " + str(self.rdmg), " Range: " + str(self.r), " Speed: " + str(self.s), " Defense " + str(self.d))
+        else:
+            print("ENEMY:\nHP: " + str(self.hp))
+
+    def mattack(self, distance, mods):
+        if distance == 1:
+            if "warhammer" in mods:
+                return self.mdmg
+            else:
+                return 0
+        elif distance == 0:
+            if "warhammer" in mods:
+                return self.mdmg//2
+            if "sword" in mods:
+                return self.mdmg*5//2
+            else:
+                return self.mdmg
+
+    def rattack(self, distance):
+        if distance > self.r:
+            return 0
+        elif distance <= self.r:
+            return self.rdmg
+
+#ROBOT TYPES
+NormalBot = Robots("Normal", 20, 2, 2, 0, 2, 3, 1)
+dummy = Robots("Dummy", 1000, 0, 0, 0, 0, 0, 0)
+PRobot = Robots("Player", 10, 1, 1, 0, 1, 2, 0)
+RusherBot = Robots("Rusher", 40, 5, 0, 0, 0, 6, 3)
+RangerBot = Robots("Ranger", 30, 3, 8, 1, 5, 6, 2)
+TankBot = Robots("Tank", 50, 8, 6, 0, 4, 2, 6)
+
+
+#MODULES
+Repair = Modules("repair", 2)
+
+def upgradebot(numstat):
+    invalid1, invalid2, invalid3, invalid4, invalid5, invalid6 = False, False, False, False, False, False
+    statpoints = numstat
+    print("Please allocate your points")
+    statpoints = int(numstat)
+
+    hpincrease = input("How many points would you like to put into your hp? You have " + str(statpoints) + " remaining.\n")
+    if hpincrease.isdecimal() == True:
+        statpoints += -int(hpincrease)
+    else:
+        print("The value you entered was invalid\n")
+        invalid1 = True
+
+    mdmgincrease = input("How many points would you like to put into your melee damage? You have " + str(statpoints) + " remaining.\n")
+    if mdmgincrease.isdecimal() == True:
+        statpoints += -int(mdmgincrease)
+    else:
+        print("The value you enetered was invalid\n")
+        invalid2 = True
+
+    rdmgincrease = input("How many points would you like to put into your range? You have " + str(statpoints) + " remaining.\n")
+    if rdmgincrease.isdecimal() == True:
+        while int(rdmgincrease) % 2 != 0:
+            print("Remember to enter a value divisible by 2, or 0")
+            rdmgincrease = input("How many points would you like to put into your range? You have " + str(statpoints) + " remaining.\n")
+            if rdmgincrease.isdecimal() == False:
+                invalid3 = True
+                break
+
+    if rdmgincrease.isdecimal() == True:
+        statpoints += -int(rdmgincrease)
+    else:
+        print("The value you entered was invalid\n")
+        invalid3 = True
+
+    speedincrease = input("How many points would you like to put into your speed? You have " + str(statpoints) + " remaining.\n")
+    if speedincrease.isdecimal() == True:
+        statpoints += -int(speedincrease)
+    else:
+        print("The value you entered was invalid\n")
+        invalid4 = True
+
+    rangeincrease = input("How many points would you like to put into your range damage? You have " + str(statpoints) + " remaining.\n")
+    if rangeincrease.isdecimal() == True:
+        while int(rangeincrease) % 2 != 0:
+            print("Remember to enter a value divisible by 2, or 0")
+            rangeincrease = input("How many points would you like to put into your range damage? You have " + str(statpoints) + " remaining.\n")
+            if rangeincrease.isdecimal() == False:
+                invalid5 = True
+                break
+
+    if rangeincrease.isdecimal() == True:
+        statpoints += -int(rangeincrease)
+    else:
+        print("The value you entered was invalid\n")
+        invalid5 = True
+
+    defenseincrease = input("How many points would you like to put into your defense? You have " + str(statpoints) + " remaining.\n")
+    if defenseincrease.isdecimal() == True:
+        statpoints += -int(defenseincrease)
+    else:
+        print("The value you entered was invalid\n")
+        invalid6 = True
+
+
+    while statpoints < 0 or invalid1 == True or invalid2 == True or invalid3 == True or invalid4 == True or invalid5 == True or invalid6 == True:
+        statpoints = numstat
+        print("Please allocate your points (Daniel: Is my friendship with you a mistake? No? Prove me otherwise then.)")
+        statpoints = int(numstat)
+
+        hpincrease = input("How many points would you like to put into your hp? You have " + str(statpoints) + " remaining.\n")
+        if hpincrease.isdecimal() == True:
+            statpoints += -int(hpincrease)
+            invalid1 = False
+        else:
+            print("The value you entered was invalid\n")
+            invalid1 = True
+
+        mdmgincrease = input("How many points would you like to put into your melee damage? You have " + str(statpoints) + " remaining.\n")
+        if mdmgincrease.isdecimal() == True:
+            statpoints += -int(mdmgincrease)
+            invalid2 = False
+        else:
+            print("The value you enetered was invalid\n")
+            invalid2 = True
+
+        rdmgincrease = input("How many points would you like to put into your range damage? You have " + str(statpoints) + " remaining.\n")
+        if rdmgincrease.isdecimal() == True:
+            while int(rdmgincrease) % 2 != 0:
+                print("Remember to enter a value divisible by 2, or 0")
+                rdmgincrease = input("How many points would you like to put into your range damage? You have " + str(statpoints) + " remaining.\n")
+                if rdmgincrease.isdecimal() == False:
+                    invalid3 = True
+                    break
+
+        if rdmgincrease.isdecimal() == True:
+            statpoints += -int(rdmgincrease)
+            invalid3 = False
+        else:
+            print("The value you entered was invalid\n")
+            invalid3 = True
+
+        speedincrease = input("How many points would you like to put into your speed? You have " + str(statpoints) + " remaining.\n")
+        if speedincrease.isdecimal() == True:
+            statpoints += -int(speedincrease)
+            invalid4 = False
+        else:
+            print("The value you entered was invalid\n")
+            invalid4 = True
+
+        rangeincrease = input("How many points would you like to put into your range? You have " + str(statpoints) + " remaining.\n")
+        if rangeincrease.isdecimal() == True:
+            while int(rangeincrease) % 2 != 0:
+                print("Remember to enter a value divisible by 2, or 0")
+                rangeincrease = input("How many points would you like to put into your range? You have " + str(statpoints) + " remaining.\n")
+                if rangeincrease.isdecimal() == False:
+                    invalid5 = True
+                    break
+
+        if rangeincrease.isdecimal() == True:
+            statpoints += -int(rangeincrease)
+            invalid5 = False
+        else:
+            print("The value you entered was invalid\n")
+            invalid5 = True
+
+        defenseincrease = input("How many points would you like to put into your defense? You have " + str(statpoints) + " remaining.\n")
+        if defenseincrease.isdecimal() == True:
+            statpoints += -int(defenseincrease)
+            invalid6 = False
+        else:
+            print("The value you entered was invalid\n")
+            invalid6 = True
+
+    PRobot.hp += int(hpincrease) * 2
+    PRobot.mdmg += int(mdmgincrease)
+    PRobot.rdmg += int(rdmgincrease)
+    PRobot.r += int(int(rangeincrease)/2)
+    PRobot.s += int(speedincrease)
+    PRobot.d += int(defenseincrease)
+    text = random.randint(1,4)
+    if text == 1:
+        input("(Daniel: Well, I'd say I did a good job.)")
+    elif text == 2:
+        input("(Daniel: Your mech is looking better than ever!)")
+    else:
+        input("(Daniel: Lets hope you don't break this, I'm getting attached to this thing.)")
+    
+    return statpoints
+
+def meleeweaponmodule(mods):
+    input("You head over to the armory.")
+    input("You see a few choices for you here.")
+    input("But from what you see on the piece of paper,\nYou can only grab the hammer or a sword for your mech.")
+    weapon = input("The hammer has decreased damage in close range but has armorpiercing damage at 1 unit of distance away.\nThe sword has increased damage.\n(h/s)\n")
+    input("You insert the piece of paper which happens to be a ticket of sorts.")
+    if weapon == "h":
+        input("You've obtained a warhammer, and it's quickly transported to the hanger.")
+        mods.append("warhammer")
+    elif weapon == "s":
+        input("You've obtained a sword, and it's quickly transported to the hanger.")
+        mods.append("sword")
+    else:
+        input("The machine didn't register the input...\nYou are not getting a refund,\nYou're stupid.")
+        input("Since you're now stuck with punching the enemy, you start reading martial arts books,\nSadly, none of it really helped.")
+        PRobot.mdmg += 3
+    
+    return mods    
+
+def distancemoved(moved):   #distance moved
+    if moved < 0:
+        moved = abs(moved)
+        print("You have moved backwards by", str(moved), "units")
+    elif moved > 0:
+        print("You have moved forwards by", str(moved), "units")
+    else:
+        print("You have stood your ground")
+
+def endistancemoved(moved):   #enemy distance moved
+    if moved < 0:
+        moved = abs(moved)
+        print("Your enemy has moved backwards by", str(moved), "units")
+    elif moved > 0:
+        print("Your enemy has moved forwards by", str(moved), "units")
+    else:
+        print("Your enemy has stood their ground")
+
+def disttoen(distance):  #distance to enemy
+    if distance <= 0:
+        print("You are in the face of the enemy!")
+    else:
+        print("You are", str(distance), "units away from the enemy!")
+
+def mdamagedealt(damage, attacker, defender, dspeed, aspeed, armorpiercing, truedmg, tracking):  #calculates the hp of the recepient as well as damage dealt REMEMBER TO ADD EVASIVE STAT
+    defense = defender.d
+    deltaspeed = dspeed - aspeed
+
+    if armorpiercing == True:
+        defense = defense//4
+    elif truedmg == True:
+        defense = 0
+    
+    if tracking == True:
+        deltaspeed = 0
+
+    if deltaspeed > 0:
+        hitormiss = random.randint(0, 100)
+        if hitormiss <= deltaspeed:
+            damage = 0
+            if attacker.n == PRobot:
+                print("Your attack was dodged!")
+            else:
+                print("You managed to dodge your enemy's attack!")
+            return defender.hp
+
+    if defense >= damage:
+        damage = 1     
+        if attacker.n == PRobot.n:
+            print("Your attack bounced off the enemy's armor like it was nothing! 1 damage dealt")
+        else:
+            print("Your enemy's pathetic attack bounced off your glorious armor like it was nothing! 1 damage dealt") 
+    else:
+        damage += -defense
+        if attacker.n == PRobot.n:
+            print("Your attack dealt", damage, "damage!")
+        else:
+            print("You were dealt", damage, "damage!")
+
+    defender.hp += -damage
+    return defender.hp
+
+def rdamagedealt(damage, attacker, defender, dspeed, aspeed, armorpiercing, truedmg, tracking):  #calculates the hp of the recepient as well as damage dealt REMEMBER TO ADD EVASIVE STAT
+    defense = defender.d
+    deltaspeed = dspeed - aspeed
+
+    if armorpiercing == True:
+        defense = defender.d//4
+    elif truedmg == True:
+        defense = 0
+
+    if tracking == True:
+        deltaspeed = deltaspeed//2
+
+    if deltaspeed > 0:
+        hitormiss = random.randint(0, 100)
+        if hitormiss <= deltaspeed:
+            damage = 0
+            if attacker.n == PRobot.n:
+                print("Your projectile was dodged!")
+            else:
+                print("You managed to dodge your enemy's projectile")
+            return defender.hp
+
+    if defense >= attacker.rdmg:
+        damage = 1
+        if attacker.n == PRobot.n:
+            print("Your projectile bounced off the enemy's armor like it was nothing! 1 damage dealt")
+        else:
+            print("Your enemy's pathetic projectile bounced off your glorious armor like it was nothing! 1 damage dealt")
+    else:
+        damage += -defense
+        if attacker.n == PRobot.n:
+            print("Your attack dealt", str(damage), "damage!")
+        else:
+            print("You were dealt", str(damage), "damage!")
+    defender.hp += -damage
+    return defender.hp
+
+def botAI(type, distance):
+
+    movement = 0
+    damagetop = 0
+    damagetos = 0
+    cowardice = False
+    choice = random.randint(1, 100)
+   
+    if type == "Normal":
+ 
+        if choice <= 1:
+            input('Your opponent backs away in fear.\nGuess this guy is a coward.')
+            movement = -NormalBot.s
+            endistancemoved(movement)
+            distance += -movement
+            disttoen(distance)
+
+        elif distance == NormalBot.s:
+ 
+            if choice <= 51:
+                movement = NormalBot.s
+                endistancemoved(movement)
+                distance += -movement
+                disttoen(distance)
+                damagetop = NormalBot.mdmg
+                mdamagedealt(damagetop, NormalBot, PRobot, PRobot.s, NormalBot.s, False, False, False)
+         
+            elif choice <= 100:
+                movement = NormalBot.s - NormalBot.r
+                endistancemoved(movement)
+                distance += -movement
+                disttoen(distance)
+                damagetop = NormalBot.rdmg
+                rdamagedealt(damagetop, NormalBot, PRobot, PRobot.s, NormalBot.s, False, False, False)
+        
+        elif distance > NormalBot.s:
+     
+            if choice <=51:
+                movement = NormalBot.s
+                endistancemoved(movement)
+                distance += -movement
+                disttoen(distance)
+            
+            elif choice <= 100:
+                movement = distance - NormalBot.r
+                
+                if movement > NormalBot.s:
+                    movement = NormalBot.s
+                    distance += -movement
+                    endistancemoved(movement)
+                    disttoen(distance)
+
+                elif movement <= NormalBot.s:
+                    distance += -movement
+                    endistancemoved(movement)
+                    disttoen(distance)
+                    damagetop = NormalBot.rdmg
+                    rdamagedealt(damagetop, NormalBot, PRobot, PRobot.s, NormalBot.s, False, False, False)
+     
+        elif distance < NormalBot.s:
+         
+            if choice <= 41:
+                movement = distance
+                endistancemoved(movement)
+                disttoen(0)
+                distance = 0
+                damagetop = NormalBot.mdmg
+                mdamagedealt(damagetop, NormalBot, PRobot, PRobot.s, NormalBot.s, False, False, False)
+                input("")
+           
+            elif choice <= 51:
+
+                if distance == 0:
+                    movement = -1
+                    endistancemoved(movement)
+                    distance += -movement
+                    input("")
+                    movement = 2
+                    endistancemoved(movement)
+                    disttoen(0)
+                    distance = 0
+
+                else:
+                    movement = distance
+                    endistancemoved(movement)
+                input("The enemy bot has COLLIDED with you!")
+                disttoen(0)
+                distance = 0
+                input("")
+                damagetop = movement + NormalBot.mdmg
+                if NormalBot.d >= movement:
+                    damagetos = 1
+                else:
+                    damagetos = movement - NormalBot.d
+                mdamagedealt(damagetop, NormalBot, PRobot, PRobot.s, NormalBot.s, False, True, True)
+                input("")
+                
+       
+            elif choice <= 100:
+                movement = distance - NormalBot.r
+                endistancemoved(movement)
+                input("")
+                disttoen(distance - movement)
+                distance += -movement
+                input("")
+                damagetop = NormalBot.rdmg
+                rdamagedealt(damagetop, NormalBot, PRobot, PRobot.s, NormalBot.s, False, False, False)
+                input("")
+
+    if type == "Rusher":
+
+        if choice <= 1:
+            input("Duke backed away, you have no idea why though,\nGuess he's a coward.")
+            movement = -RusherBot.s
+            endistancemoved(movement)
+            input("")
+            disttoen(distance - movement)
+            distance += -movement
+            input("")
+            cowardice = True
+
+        elif distance == RusherBot.s:
+            movement = distance
+            endistancemoved(movement)
+            input("")
+            disttoen(0)
+            distance = 0
+            input("")
+            damagetop = RusherBot.mdmg
+            mdamagedealt(damagetop, RusherBot, PRobot, PRobot.s, RusherBot.s, False, False, False)
+            input("")
+
+        elif distance < RusherBot.s:
+
+            if choice <= 31:
+                movement = distance
+                endistancemoved(movement)
+                input("")
+                disttoen(0)
+                distance = 0
+                input("")
+                damagetop = RusherBot.mdmg
+                mdamagedealt(damagetop, RusherBot, PRobot, PRobot.s, RusherBot.s, False, False, False)
+                input("")
+
+            if choice <= 100:
+
+                if distance == 0 or distance == 1:
+                    movement = -2
+                    endistancemoved(movement)
+                    distance += -movement
+                    movement = distance
+                    endistancemoved(movement + 1)
+                    distance = 0
+
+                else:
+                    movement = distance
+                
+                print("The enemy bot has COLLIDED with you!")
+                input("")
+                disttoen(0)
+                distance = 0
+                input("")
+                damagetop = RusherBot.mdmg + movement
+                if RusherBot.d >= movement:
+                    damagetos = 1
+                else:
+                    damagetos = movement - RusherBot.d
+                mdamagedealt(RusherBot.mdmg + movement, RusherBot, PRobot, PRobot.s, RusherBot.s, False, False, False)
+                input("")
+
+        elif distance > RusherBot.s:
+            movement = RusherBot.s
+            endistancemoved(movement)
+            input("")
+            distance += -movement
+            disttoen(distance)
+            input("")
+            print("No damage dealt!")
+            input("")
+
+    if type == "Ranger":
+
+        if choice <= 1:
+            input("(Bramble: Not like this. Please)\nGuess Bramble is a coward")
+            movement = -RangerBot.s
+            endistancemoved(movement)
+            input("")
+            distance += -movement
+            disttoen(distance)
+            input("")
+            cowardice = True
+        
+        elif distance <= RangerBot.s + RangerBot.r:
+            movement = distance - RangerBot.r
+            endistancemoved(movement)
+            input("")
+            distance += -movement
+            disttoen(distance)
+            input("")
+            damagetop = RangerBot.rdmg
+            rdamagedealt(damagetop, RangerBot, PRobot, PRobot.s, RangerBot.s, False, False, False)
+
+            if abs(movement) < RangerBot.s:
+                movement = 0
+                movement += -RangerBot.s
+                endistancemoved(movement)
+                input("")
+                distance += -movement
+                disttoen(distance)
+                input("")
+
+        elif distance > RangerBot.s + RangerBot.r:
+            if distance <= PRobot.s + PRobot.r:
+                movement = PRobot.s + PRobot.r - distance + 1
+                if abs(movement) > RangerBot.s:
+                    movement = RangerBot.s
+                endistancemoved(movement)
+                input("")
+                distance += -movement
+                disttoen(distance)
+                input("")
+
+    if type == "Tank":
+
+        if choice <= 1:
+            input("The Rock decided to retreat.")
+            cowardice = True
+        
+        elif choice <= 50:
+
+            if distance <= 4:
+
+                if distance == 3:
+                    movement = -1
+                    endistancemoved(movement)
+                    input("")
+                    distance += -movement
+                    disttoen(distance)
+                    damagetop = TankBot.rdmg
+                    rdamagedealt(damagetop, TankBot, PRobot, PRobot.s, TankBot.s, True, False, False)
+
+                else:
+                    movement = -2
+                    endistancemoved(movement)
+                    input("")
+                    distance += -movement
+                    disttoen(distance)
+                    damagetop = TankBot.rdmg
+                    rdamagedealt(damagetop, TankBot, PRobot, PRobot.s, TankBot.s, True, False, False)
+
+            else:
+                movement = -2
+                endistancemoved(movement)
+                input("")
+                distance += -movement
+                disttoen(distance)
+        
+        elif choice <= 100:
+
+            if distance <= 2:
+                movement = distance
+                endistancemoved(movement)
+                distance = 0
+                disttoen(distance)
+                damagetop = TankBot.mdmg
+                mdamagedealt(damagetop, TankBot, PRobot, PRobot.s, TankBot.s, False, True, True)
+
+                if abs(movement) <= 1:
+                    movement = -(TankBot.s - abs(movement))
+                    endistancemoved(movement)
+                    distance += -movement
+                    disttoen(distance)
+                    
+            else:
+                movement = -2
+                endistancemoved(movement)
+                distance += -movement
+                disttoen(distance)
+
+                if distance <= 4:
+                    rdamagedealt(damagetop, TankBot, PRobot, PRobot.s, TankBot.s, True, False, False)
+            
+    data = [damagetop, damagetos, distance]
+    return data
+
+def battleturn(turn, distance, modules, etype, maxhp, emaxhp):   #Main battle function
+    pdist = PRobot.s
+    hp = PRobot.hp
+    d = PRobot.d
+    ehp = etype.hp
+    ed = etype.d
+
+    if turn == "player" or turn == "start":
+        loop = 0
+        if turn == "start":
+            hp = maxhp
+            ehp = emaxhp
+            PRobot.hp = maxhp
+            etype.hp = emaxhp
+            print("The battle will start now.")
+
+        AbleToAttack, pattack, end_turn = True, False, False
+        if hp <= 0:
+            return distance
+        if Repair in modules:
+            if maxhp <= PRobot.hp + Repair.stat:
+                input("Your repair module has done nothing because your mech isn't damaged enough for it to repair.")
+            else:
+                hp += Repair.stat
+                input("Your repair module has restored " + str(Repair.stat) + " hp!")
+
+        Robots.allstats(etype, False)
+        Robots.allstats(PRobot, True)
+        text = input("(ENTER TO CONTINUE)")
+        text = input("It is your turn.\n(ENTER TO CONTINUE)")
+        
+        while (pdist > 0 or AbleToAttack == True) and end_turn == False and hp > 0 and etype.hp > 0: 
+            if loop < 1:
+                disttoen(distance)
+                print("Choose your actions wisely")
+            loop = 1
+            paction = input("Actions: m to move, a to attack, s to use active module, e to end turn\n")
+            
+            while paction != "m" and paction != "a" and paction != "s" and paction != "e":
+                paction = input("Actions: m to move, a to attack, s to use active module, e to end turn (ENTER A VALID ACTION)\n")
+            
+            if paction == "m":
+                print("You have " + str(pdist) + " units of movement left.")
+                mdistance = input("Distance you wish to move\n")
+
+                if mdistance.isdecimal:
+                    mdistance = int(mdistance)
+                else:
+                    mdistance = pdist + 1
+
+                if abs(mdistance) > pdist:
+                    print("Invalid distance, please enter a number that is lower than or equal to your amount of movement left\n(" + str(pdist) + " units of movement left)")
+                
+                elif int(mdistance) <= pdist:
+                    distance += -int(mdistance)
+                    pdist += -abs(mdistance)
+                    distancemoved(mdistance)
+                    
+                    if distance < 0:
+                        print("You have COLLIDED with the enemy!")
+                        pdist = 0
+                        ramdmg = mdistance + distance - PRobot.d
+                        if ramdmg <= 0:
+                            hp += -1
+                            print("You've lost 1 hp from ramming the enemy!")
+                        else:
+                            hp += -ramdmg
+                            print("You've lost", str(ramdmg), "hp from ramming the enemy!")
+                        ehp += -PRobot.mdmg//2 -ramdmg - PRobot.d
+                        print("The enemy's lost", str(ramdmg + PRobot.d + PRobot.mdmg//2), "hp from being rammed!")
+                        distance = 0
+                    disttoen(distance)
+            
+                if distance <= PRobot.r and pattack == False:
+                    AbleToAttack = True
+            
+            elif paction == "a" and pattack == False:
+                atype = input("Melee (m) or Ranged (r) attack?\n")
+                
+                if atype == "m":
+                    pattack = True
+                    if distance <= PRobot.mrange:
+                        dmg = Robots.mattack(PRobot, distance, modules)
+                        ap = False
+                        if "warhammer" in modules and distance == 1:
+                            ap = True
+                        ehp = mdamagedealt(dmg, PRobot, etype, etype.s, PRobot.s, ap, False, False)
+                    else:
+                        input("Dude, you're not close enough, your swing missed completely \n")
+                        pattack = True
+                
+                elif atype == "r":
+                    if distance <= PRobot.r:
+                        pattack = True
+                        dmg = Robots.rattack(PRobot, distance)
+                        ehp = rdamagedealt(dmg, PRobot, etype, etype.s, PRobot.s, False, False, False)
+                    else:
+                        input("WHAT ARE YOU AIMING AT?!\n")
+                        pattack = True
+                
+                else:
+                    print("Invalid input")
+            
+            elif paction == "a" and pattack == True:
+                input("You've already attacked this turn, if you have a module that resets your attack cooldown please use the module first.\n(ENTER TO CONTINUE)")
+            
+            elif paction == "s":
+                print("No modules implemented yet")
+           
+            elif paction == "e":
+                end_turn = True
+            
+            if Repair in modules:
+                if maxhp == PRobot.hp:
+                    input("Your repair module has done nothing because your mech isn't damaged.")
+                else:
+                    hp += Repair.stat
+                    input("Your repair module has restored " + str(Repair.stat) + " hp!")
+
+            PRobot.hp = hp
+            etype.hp = ehp
+        return distance
+
+    elif turn == "enemy":
+        print("It is the enemy's turn")
+        data = botAI(etype.n, distance)
+        etype.hp += -data[1]
+        distance = data[2]
+        return distance
+
+def battle(Battle, distance, modules, etype, maxhp, emaxhp):
+    if Battle == "normal":
+        distance = battleturn("start", distance, modules, etype, maxhp, emaxhp)
+        while PRobot.hp > 0 and etype.hp > 0:
+            distance = battleturn("enemy", distance, modules, etype, maxhp, emaxhp)
+            if PRobot.hp < 0 or etype.hp < 0:
+                break
+            distance = battleturn("player", distance, modules, etype, maxhp, emaxhp)
+        if PRobot.hp > 0:
+            input("Nice job! You won!\n")
+        else:
+            text = random.randint(1,4)
+            if text == 1:
+                input("You black out for a moment, and when you wake up, you realize that your engine is severely damaged,\nYou try to eject, but the port is blocked.\nYour mech catches fire, with you in it.\nAll that is left of you is a scorched mass of flesh, now molded into the seat of your mech.")
+            elif text == 2:
+                input("Your enemy's attack sends you reeling, and when you regain control of your mech again,\nYou see your cockpit shell about to break.\nYour opponent did not know this, and launched another attack, right at your cockpit.\nThe only thing left of your corpse were your extremities.")
+            elif text == 3:
+                input("Your enemy's last attack caused a malfunction in your cockpit, causing it to open,\nYour mech was also leaning forwards as this was happening.\nYou spilled out onto the ground, your bones cracked, but you are still breathing.\nThat was the last thing you thought before your now unpilotted mech fell on you.")
+            print("Game over")
+            tryagain = input("Start over?(y/n)\n")
+            if tryagain == "y":
+                battle(Battle, distance, modules, etype, maxhp)
+            else:
+                sys.exit()
+
+def defaultcampaign(Player):
+    Corruption = 0
+    Annoyance = 0
+    UserName = input("What is your name, user?  ")
+    if UserName == "" or UserName == " " or UserName == "  ":
+        print("Ok... You get the default name then...")
+        UserName = "Stupid Dumbass"
+        Corruption += 1
+        Annoyance += 1
+    Player.n = input(UserName + " what will you name your robot?  ")
+    if Player.n == "" or Player.n == " " or Player.n == "   ":
+        Player.n = "ProBot"
+        Corruption += 1
+        Annoyance += 1
+        input("Ok, so you're neglecting your robot too\nWhy the hell are you playing a game about robots if you're going to neglect it\n")
+        input("I wonder how long it took your dumbass to realize you could advance the text with enter.\n")
+    Mods = []
+
+    input("You are an up and coming mechanic who's dream is to participate and win in the MECH ARENA, since it is after all, the talk of everybody civilized.\nYou've managed to put together a working chassis, but you'll need to work your way up the rungs in order to reach that dream.")
+    input("Your friend, Daniel, has offered to help you with enhancing your robot,\nFor a price.")
+    input("But, since you are new, he decided to give you a few upgrades for free.")
+
+    print("You have 10 stat points, you will gain more stat points as you go, \nYou will be able to put those points in into multiple categories,")
+    input("Stats include \nMelee Strength - Amount of damage you will do in a melee attack \nRanged Strength - Amount of damage you will do in a ranged attack \nRanged Distance - Range of ranged attack \nHealth - Robot's toughness \nSpeed - Your robot's speed and chance of evading/landing attacks \nDefense - Damage reduction \n(ENTER TO CONTINUE)")
+    input("Your robot will start with the base stats of dealing 1 damage in both ranged and melee attack, \nIt will have 10 health points, \nIt will have a speed stat of 2, \nIt will have a defense of 0 and a ranged Distance of 1 \n(ENTER TO CONTINUE)")
+    input("You will gain 1 attack point for each statpoint in melee attack (2 statpoints for an increase of 1 in ranged damage), \neach statpoint put into the health category will increase your health by 2, \neach statpoint put into speed will increase it by 1 \nit will cost 1 statpoint to increase your defense by 1 \nand it will require 2 statpoints to increase the ranged distance by 1 \n(ENTER TO CONTINUE)")
+    print("You may gain new modules to add to your robot as you fight, those will have their own effects.")
+
+    statpoints = 10
+    statpoints = upgradebot(statpoints)
+    Player.allstats(True)
+    print("Now, your father, who used to fight a little, has decided to help you out a little by teaching you the controls like every good dad does with a simulation.")
+    tutorial = input("Would you like a tutorial?(y/n)  ")
+    if tutorial == "y":
+
+        distance = 3
+        movedist = 4
+        print("Your father has prepared a dummy that does absolutely nothing, \nAnd since you're in a simulation right now, your stats are set")
+        print("There will be a few numbers during battles you will want to keep an eye on,")
+        print("Distance, and you and your opponent's health,")
+        print("For each turn, you are able to move a certain amount of distance, \nYou are able to attack a certain amount of times, \nThen it will be your opponent's turn \n(For certain battles there will be special conditions which will be explained")
+        print("Enemy HP:", dummy.hp, "\nDistance", distance, "\nEnemy Type: Dummy")
+        print("The above stats are pretty self explanitory, except for enemy type, \nWhen new enemy types are introduced they will be explained.")
+        print("\nA dummy does not move but has a high amount of HP, \nIt is used to demonstrate certain things, meaning that they may have stats that will be added in order to demonstrate a feature, \nIn this case, the Dummy will showcase the basic controls such as moving and attacking.")
+        print("HP: 5 \nMelee Attack: 1 dmg \nRange Attack: 1 dmg \nMovement Left: " + str(movedist))
+        input("The battle will now start\nIt is your turn.\n(ENTER TO CONTINUE)")
+        print("Now when it is your turn you have a few options, you will have a total amount of tiles you can move, \nYou can move multiple times during one turn so long as you have enough distance to traverse left, \nand you can trade your attack for movement.")
+        print("You may attack at any point of your turn, and you will have a choice of ranged or melee attack.")
+        print("Important Note: If you are not in range for either melee (which has a range of 0) or your range attack, and you decide to use it, it will result in a miss.")
+        input("If you move more than the distance of that to the enemy, you will collide with the enemy,\nThe damage dealt to the enemy will be TRUE damage as well as tracking, meaning it ignores defense and the speed stat difference\nHowever, ramming the enemy also deals damage to yourself.\n(NOTE: You deal reduced damage in ramming as compared to enemies because balancing)")
+        print("Now move towards the dummy")
+        usermove = ""
+        while usermove != "m" or (distance != 0 and movedist > 0):
+            usermove = input("Actions: m to move, a to attack, s to use active module\n(Father: " + UserName + " I've disabled all actions except for moving in this turn.)\n")
+            if usermove == "m":
+                mdistance = input("Distance you wish to move (negative to move backwards (Father: Don't move backwards for this turn)), you have " + str(movedist) + " units of movement left\nAlso, you cannot move past an enemy robot and you'll just end up colliding\n")
+                while mdistance.isdecimal() == False:
+                    mdistance = input("Distance you wish to move (negative to move backwards (Father:...)), you have " + str(movedist) + " units of movement left\nAlso, you cannot move past an enemy robot and you'll just end up colliding\n")
+                mdistance = int(mdistance)
+                distance += -mdistance
+                omovedist = movedist
+                movedist += -abs(mdistance)
+                distancemoved(mdistance)
+                if omovedist >= mdistance:
+                    disttoen(distance)
+                while (omovedist < mdistance or mdistance < 0) and distance != 0:
+                    distance += mdistance
+                    movedist += mdistance
+                    omovedist = movedist
+                    mdistance = int(input("Distance you wish to move (Father: Please show me that you weren't a mistake) \nAlso, you cannot move past an enemy robot and you'll just end up colliding (Father: Trying to move more than you can will result in nothing, don't be stupid son.)\n"))
+                    distance += -mdistance
+                    movedist += -abs(mdistance)
+                    printeddist = distance
+                if distance < 0:
+                    print("Normally, both you and your enemy would've taken damage here as you have just rammed into them, but we won't do that in a tutorial.")
+                    print("You've COLLIDED with your enemy! (Damage negated due to this being a simulation)")
+                    distance = 0
+        print("Now please attack the enemy please.")
+        while usermove != "a":
+            usermove = input("Actions: m to move, a to attack, s to use active module\n(Father: I've disabled all actions except for attacking for this turn) \n")
+            if usermove == "a":
+                atype = input("Melee (m) or Ranged (r) attack?\n(Father: You have no ranged module in this simulation)\n")
+                while atype != "m":
+                    atype = input("Melee (m) or Ranged (r) attack?\nFor the purpose of this tutorial please use a melee attack (Father: Please just do as I say)\n")
+        mdamagedealt(1, Player, dummy, 0, 3, False, False, False)
+        print("(Father: Good job!)")
+        print("Now remember you can always do ranged attacks, but that has a different attack stat and a different range as compared to melee, thus concludes the simulation.")
+        input("Now that you're ready for the arena, time to head out!")
+    else:
+        input("You ungrateful child\n")
+        input("Well, after leaving your father confused as you have no idea how to use a robot, you've managed to pilot the robot to a nearby arena")
+
+    input("After reaching the local arena, you sign up before being put at the lowest ranking.")
+    input("You are led to a hanger, on standby until your battle.")
+    input("Somehow, only minutes after your admission, you were matched up with an opponent,\nYou might've been able to spot the signs that this wasn't what you were looking for,\nHad you not been blinded by the chance to earn fame.")
+    input("You quickly pilot your robot to the arena, and you spot your opponent,\nWell, the opponent's robot as the cockpit isn't made of glass but is made of steel instead.\n")
+    input("(Opponent: A rookie? This is going to be easy!)")
+    input("You are not impressed.")
+
+    maxhp = Player.hp
+    emaxhp = NormalBot.hp
+    battle("normal", 5, Mods, NormalBot, maxhp, emaxhp)
+
+    input("Immediately after the defeat of your not-so-capable opponent and your transportation back to the hanger,\nYour friend Daniel runs up to you, inspecting the damage to your machine.\n(Also after recieving your prize money)")
+    input("(Daniel: Jeez... Could you be less reckless " + UserName + "? This is going to be annoying to repair.)")
+    input("You hand Daniel the prize money.")
+    input("(Daniel:...)")
+    input("(You:...)")
+    input("(Daniel: I can't count.)")
+    input("(You: :/ )")
+    input("Daniel pockets the money and sighs, before strapping himself into a harness, which he manuvered to the cockpit of your chassis.")
+    input("(Daniel: I'll give you a few enhancements to you as well, but it'd be better for you to specialize in a certain tactic than to be scattered across the board.)")
+    input("(Daniel: Also, your next fight seems to be against Battering Ram, who tends to be very aggresive in fights,\nCareful, I don't want to lose my main source of income.)")
+
+    Player.hp = maxhp
+    statpoints += statpoints + 8
+    statpoints = upgradebot(statpoints)
+
+    input("You leave the hanger and spend the rest of your evening and night.\n")
+
+    input("In the morning, you quickly head over to the hanger where Daniel is,\nHe's sipping a cup of coffee, sitting at a desk and seemingly running some tests.")
+    input("You approach him, but as Daniel finally realizes you are here, he quickly switches the tabs on his computer.")
+    input("You try to say something, but a voice came over the PA system.")
+    input("(Announcements: Now announcing the first fight of the day, " + Player.n + " piloted by " + UserName + " against the infamous Battering Ram, piloted by Duke.)")
+    input("You shrug, deciding to let go of whatever Daniel was doing earlier, and climb into your mech, before piloting it to the arena.")
+    input("The crowd is deafening, the volume of the crowd only amplified by the announcer.")
+    input("(Announcer: Will the rookie prevail? Or will the experienced veteran win?)")
+    input("Surprisingly, Duke did not taunt you, and you decide to not either.")
+    maxhp = Player.hp
+    emaxhp = RusherBot.hp
+    battle("normal", 8, Mods, RusherBot, maxhp, emaxhp)
+    input("Duke was reeling from your previous attack, you press your advantage, and you decide to finish him off by slamming your mech's fist into him.")
+    input("You meant to hit him in the torso, or somewhere else, but your fist finds its way into the cockpit.")
+    input("You can't feel through the neural system hooked to your mech, but you could almost feel the bones crunch.")
+    input("You realize you've just killed a man.")
+    input("There is silence in the audience,\nThen suddenly, they start cheering, CHEERING, a man's death.")
+    input("Maybe you shouldn't be here, but I'm only narrating this story, I have no control over this.")
+    input("After the battle against the Duke, you once again pull your chassis into the hanger,\nTo the horror of Daniel, it was barely hanging together.")
+    input("As Daniel was busy repairing your mech, a woman wearing a lab coat with a large box walked up to you,\nThis made absolutely no sense as nobody in their right minds wore lab coats outside.\n(And you just killed a man, but you've already forgotten about that)")
+    input("(Unknown Woman: I see potential in you.)")
+    input("(You: Ok...)")
+    input("(Unknown Woman: Here.)\nThe unknown woman handed you the box she had.")
+    input("(Unknown Woman: Your mechanic should know what to do with this.)")
+    input("STRANGER DANGER IS SOMETHING YOU SHOULD'VE KNOWN WHEN YOU TOOK THE BOX.")
+    input("The woman leaves, and you hand Daniel the box when he finished repairs.")
+    input("(Daniel: Who gave this to you?)")
+    input("You shrug.")
+    input("Daniel opens the box")
+    input("(Daniel: This thing is probably worth more than the entirety of your mech.)")
+    input("You shrug again.")
+    input("Daniel sighs, seemingly resigning to the fact that his friend was stupid.\n")
+    input("You have gained a passive module!")
+
+    Mods.append(Repair)
+
+    input("After a while, Daniel came back.")
+    input("(Daniel: So where's the prize money from the last round?)")
+    input("You hand Daniel the prize money, which you probably should've given to the unknown woman, since she did give you something invaluable.")
+    input("(Daniel: The next person you're going up against, Brambles, seems to have a very elusive fighting style, make sure you can catch up to her.)")
+    input("(Daniel: Alright, what do you want me to do?)")
+
+    Player.hp = maxhp
+    statpoints += 8
+    statpoints = upgradebot(statpoints)
+
+    input("Surprisingly, the PA system announced your match as soon as Daniel finished with upgrading your mech.")
+    input("(Daniel: Strange... The frequency of these battles are a lot quicker than normal...\nWell it should be alright, the repair module's already finished the repairs,\nThough it will be much less effective during combat.)")
+    input("(Daniel: Good luck.)\n")
+    input("You pilot your mech into the arena, seeing your opponent, she looks scared.")
+    maxhp = Player.hp
+    emaxhp = RangerBot.hp
+    battle("normal", 10, Mods, RangerBot, maxhp, emaxhp)
+    input("You beat her, Bramble's mech was now collapsed to the floor.")
+    input("The announcer started chanting something, something about crushing Bramble,\nThe high of your victory seems to be clouding your judgement.")
+    input("You lift your mech's foot before placing it over the downed mech's cockpit.\nThe glass cockpit cracked under the pressure.")
+    Choice = input("Your head clears, but why should you stop? The crowd loves it! The crowd loves YOU!\nSo now, it's your choice, let your foot fall?(y)")
+    if Choice == "y":
+        input("Your foot descends.")
+        input("[Chapter 2]")
+        input("Your actions have consequences.")
+        Corruption += 3
+        input("Daniel saw everything that happened.")
+        input("As you pilot your way into the hanger, you see Daniel standing stiffly there, staring at the screen of his laptop.")
+    else:
+        input("[Chapter 2]")
+        input("Your actions have effects on the world and yourself,\nKeep yourself on the right path.")
+        input("As you pilot your way back to the hanger, you meet Daniel on the way.")
+        if Corruption <= 2:
+            Corruption = 0
+    Corruption += -2
+
+    if Corruption >= 3:
+        input("(Daniel: H-hey, how're you doing?)")
+        input("You say nothing.")
+        input("(Daniel: So, upgrades right? I-I'll get on that in a second, park your mech first).")
+    else:
+        input("(Daniel: Yo you good? That was an intense fight!)")
+        input("(Daniel: Want me to upgrade some stuff? Lemme hitch a ride and park it first.)")
+
+    Player.hp = maxhp
+    statpoints += 10
+    statpoints = upgradebot(statpoints)
+
+    if Choice == "y":
+        input("The strange woman from before walked up to you with a piece of paper.")
+        input("(Unknown Woman: Good job. Here.)")
+        input("(Unknown Woman: Head over to the armory, you'll be able to get a weapon for this)")
+        input("The woman proceeded to leave.")
+    else:
+        input("Bramble walked up to you.")
+        input("(Bramble: Thanks for not killing me.)")
+        input("(You: No problem.)")
+        input("(Bramble: Here, take this as thanks.)")
+        input("Bramble hands you a piece of paper.")
+        input("(Bramble: You can use this at the armory.)")
+
+    Mods = meleeweaponmodule(Mods)
+    if "sword" not in Mods and "warhammer" not in Mods:
+        Annoyance += 2
+    
+    maxhp = Player.hp
+    emaxhp = TankBot.hp
+    battle("Normal", 5, Mods, TankBot, maxhp, emaxhp)
+
+defaultcampaign(PRobot)
