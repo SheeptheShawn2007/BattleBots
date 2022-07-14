@@ -1,5 +1,5 @@
 import random
-from re import M
+
 import sys
 
 class Modules:
